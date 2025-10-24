@@ -1,2 +1,31 @@
-# OnTonightApp
-Hospitality App for Service workers to create profiles and gain regulars as followers so they can build up thier shift potential income.  Customers can search area in cities for top rated or specific vibes.  Customers have profiles also but they are not as inclusive as the Servers and Bartenders
+# OnTonight — v0.9.0 (Pilot Ready)
+
+**Where regulars are made.**
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/JackJoyCyber/OnTonightApp)
+
+## Quick Start
+```bash
+npm install
+npm run dev
+# http://localhost:3000
+```
+
+## Deep Links
+- `/#/splash`
+- `/#/feed`
+- `/#/profile/ari`
+
+## Content
+- Edit **public/data.json** for venues/pros
+- Images live in **public/data** (AI-styled placeholders included)
+
+## Deploy
+- Click the badge above (from your public repo), or:
+```bash
+npm i -g vercel
+vercel
+vercel --prod
+```
+
+— Owner: **JackJoyCyber** · Repo: **OnTonightApp** · Updated: 2025-10-24
