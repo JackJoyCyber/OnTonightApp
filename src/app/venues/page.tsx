@@ -1,37 +1,66 @@
-"use client";
-import useSWR from "swr";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import { venues, workers } from "@/lib/data";
 
-const fetcher = (url: string) => fetch(url).then(r => r.json());
+type Params = { slug: string };
 
-export default function VenuesPage() {
-  const { data, isLoading, error } = useSWR("/api/venues", fetcher);
+export default function VenueDetail({ params }: { params: Params }) {
+  const venue = venues.find(v => v.slug === params.slug);
+  if (!venue) return notFound();
 
-  if (error) return <div className="p-6">Failed to load venues</div>;
-  if (isLoading) return <div className="p-6">Loading venues...</div>;
+  const roster = workers.filter(w => venue.workers.includes(w.id));
 
   return (
     <main className="container mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Explore by Venue</h1>
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.map((v: any) => (
-          <Link
-            key={v.id}
-            href={`/venues/${v.slug}`}
-            className="block bg-gray-900 rounded-2xl p-4 hover:shadow-lg"
-          >
-            <div className="relative w-full aspect-[16/9] overflow-hidden rounded-xl mb-3 bg-gray-800">
-              <img
-                src={v.image || "/placeholder.jpg"}
-                alt={v.name}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <h2 className="text-lg font-semibold">{v.name}</h2>
-            <p className="text-sm text-gray-400">{v.address}</p>
-          </Link>
-        ))}
+      <nav className="text-sm mb-4 text-gray-400">
+        <Link href="/" className="hover:underline">Home</Link>
+        <span className="mx-2">/</span>
+        <Link href="/venues" className="hover:underline">Venues</Link>
+        <span className="mx-2">/</span>
+        <span className="text-gray-300">{venue.name}</span>
+      </nav>
+
+      <div className="mb-6">
+        <div className="relative w-full max-w-4xl aspect-[16/9] overflow-hidden rounded-2xl bg-gray-800">
+          <img
+            src={venue.image || "/placeholder.jpg"}
+            alt={venue.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <h1 className="text-3xl font-bold mt-4">{venue.name}</h1>
+        <p className="text-gray-400">{venue.address}</p>
+        <p className="text-gray-300 mt-2">Who’s on tonight: {venue.tonight}</p>
       </div>
+
+      <h2 className="text-xl font-semibold mb-3">Tonight’s roster</h2>
+      {roster.length === 0 ? (
+        <p className="text-gray-400">No workers listed for tonight.</p>
+      ) : (
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {roster.map(w => (
+            <div key={w.id} className="bg-gray-900 rounded-2xl p-4">
+              <div className="relative w-full aspect-square overflow-hidden rounded-xl bg-gray-800">
+                <img
+                  src={w.avatar || "/placeholder.jpg"}
+                  alt={w.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h3 className="text-lg font-semibold mt-3">{w.name}</h3>
+              <p className="text-gray-400 text-sm">{w.role}</p>
+              <div className="mt-3">
+                <Link
+                  href="/workers"
+                  className="text-xs px-2 py-1 border border-gray-700 rounded hover:bg-gray-800"
+                >
+                  View all people
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </main>
   );
 }
