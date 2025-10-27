@@ -1,23 +1,8 @@
 {
   "venues": [
-    {
-      "id": "haiku",
-      "name": "Haiku Tampa",
-      "subtitle": "Modern cocktails & cuisine",
-      "image": "/data/haiku_ai.svg"
-    },
-    {
-      "id": "ulele",
-      "name": "Ulele",
-      "subtitle": "Elevated dining on the river",
-      "image": "/data/ulele_ai.svg"
-    },
-    {
-      "id": "beacon",
-      "name": "Beacon Rooftop Bar",
-      "subtitle": "Skyline, sunset, celebration",
-      "image": "/data/beacon_ai.svg"
-    }
+    { "id": "haiku", "name": "Haiku Tampa", "subtitle": "Modern cocktails & cuisine" },
+    { "id": "ulele", "name": "Ulele", "subtitle": "Elevated dining on the river" },
+    { "id": "beacon", "name": "Beacon Rooftop Bar", "subtitle": "Skyline, sunset, celebration" }
   ],
   "pros": [
     {
@@ -26,37 +11,45 @@
       "role": "Bartender",
       "venue": "Haiku Tampa",
       "regulars": 47,
-      "tonight": "9pm \u2013 Close",
-      "about": "Let\u2019s make tonight taste like a win.",
-      "photo": "/data/ari_ai.svg",
-      "heroText": "Ari \u2014 Cocktail Artist"
+      "about": "Let’s make tonight taste like a win.",
+      "photo": "/data/ari_ai.png",
+      "heroText": "Cocktail Artist OnTonight",
+      "schedule": [
+        { "day": "Thu", "start": "18:00", "end": "00:30" },
+        { "day": "Fri", "start": "19:00", "end": "02:00" },
+        { "day": "Sat", "start": "19:00", "end": "02:00" }
+      ]
     },
     {
-      "id": "uleleLegend",
-      "name": "Ulele Legend",
+      "id": "stephan",
+      "name": "Stephan",
       "role": "Server",
       "venue": "Ulele",
       "regulars": 58,
-      "tonight": "Dinner service",
       "about": "You already feel like a regular.",
-      "photo": "/data/ulele_legend_ai.svg",
-      "heroText": "Ulele \u2014 Confident Server"
+      "photo": "/data/stephan_ai.png",
+      "heroText": "Hospitality Legend OnTonight",
+      "schedule": [
+        { "day": "Wed", "start": "17:00", "end": "23:00" },
+        { "day": "Thu", "start": "17:00", "end": "23:00" },
+        { "day": "Sun", "start": "16:00", "end": "22:00" }
+      ]
     },
     {
-      "id": "beaconSunset",
-      "name": "Sunset Mixologist",
-      "role": "Bartender",
+      "id": "melanie",
+      "name": "Melanie",
+      "role": "Server",
       "venue": "Beacon Rooftop Bar",
       "regulars": 63,
-      "tonight": "Golden hour \u2014 close",
-      "about": "Sunset\u2019s better when I\u2019m pouring.",
-      "photo": "/data/beacon_mix_ai.svg",
-      "heroText": "Beacon \u2014 Sunset Mixologist"
+      "about": "Sunset’s better when I’m pouring.",
+      "photo": "/data/melanie_ai.png",
+      "heroText": "Sunset Server OnTonight",
+      "schedule": [
+        { "day": "Thu", "start": "18:30", "end": "23:30" },
+        { "day": "Fri", "start": "18:30", "end": "01:30" },
+        { "day": "Sat", "start": "18:30", "end": "01:30" }
+      ]
     }
   ],
-  "venueToPro": {
-    "haiku": "ari",
-    "ulele": "uleleLegend",
-    "beacon": "beaconSunset"
-  }
+  "venueToPro": { "haiku": "ari", "ulele": "stephan", "beacon": "melanie" }
 }
