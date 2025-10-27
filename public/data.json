@@ -12,7 +12,7 @@
       "venue": "Haiku Tampa",
       "regulars": 47,
       "about": "Let’s make tonight taste like a win.",
-      "photo": "/data/ari_ai.png",
+      "photo": "/data/ari.png",
       "heroText": "Cocktail Artist OnTonight",
       "schedule": [
         { "day": "Thu", "start": "18:00", "end": "00:30" },
@@ -27,7 +27,7 @@
       "venue": "Ulele",
       "regulars": 58,
       "about": "You already feel like a regular.",
-      "photo": "/data/stephan_ai.png",
+      "photo": "/data/stephan.png",
       "heroText": "Hospitality Legend OnTonight",
       "schedule": [
         { "day": "Wed", "start": "17:00", "end": "23:00" },
@@ -42,7 +42,7 @@
       "venue": "Beacon Rooftop Bar",
       "regulars": 63,
       "about": "Sunset’s better when I’m pouring.",
-      "photo": "/data/melanie_ai.png",
+      "photo": "/data/melanie.png",
       "heroText": "Sunset Server OnTonight",
       "schedule": [
         { "day": "Thu", "start": "18:30", "end": "23:30" },
