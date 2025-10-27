@@ -11,10 +11,9 @@
   "dependencies": {
     "next": "15.0.2",
     "react": "18.3.1",
-    "react-dom": "18.3.1",
-    "@next/swc-win32-x64-msvc": "15.0.2"
+    "react-dom": "18.3.1"
   },
   "engines": {
-    "node": ">=18.17"
+    "node": "18.x"
   }
 }
