@@ -2,20 +2,16 @@
 import { useEffect, useMemo, useState } from 'react';
 
 const DAY_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-// Parse "HH:MM" -> minutes from midnight
 const hmToMin = (hhmm) => {
   const [h, m] = (hhmm || '00:00').split(':').map(Number);
   return (h * 60 + (m || 0)) % (24 * 60);
 };
 
-// Is a pro scheduled "OnTonight" given now (local browser time)
 const isOnTonight = (pro, now = new Date()) => {
   if (!pro?.schedule || !Array.isArray(pro.schedule)) return false;
-  const today = DAY_SHORT[now.getDay()]; // browser local timezone
+  const today = DAY_SHORT[now.getDay()];
   const mins = now.getHours() * 60 + now.getMinutes();
 
-  // Consider “overnight” ranges (end < start) as crossing midnight
   for (const s of pro.schedule) {
     if (!s?.day) continue;
     const start = hmToMin(s.start);
@@ -23,20 +19,16 @@ const isOnTonight = (pro, now = new Date()) => {
 
     if (s.day === today) {
       if (end >= start) {
-        // normal window
         if (mins >= start && mins <= end) return true;
       } else {
-        // crosses midnight (e.g., 19:00 -> 02:00)
         if (mins >= start || mins <= end) return true;
       }
     }
-
-    // If yesterday crosses into today, include early a.m. window
+    // spillover from yesterday past midnight
     const y = new Date(now);
     y.setDate(now.getDate() - 1);
     const yesterday = DAY_SHORT[y.getDay()];
     if (s.day === yesterday && hmToMin(s.end) < hmToMin(s.start)) {
-      // window spills past midnight; if we are after midnight and before end -> true
       if (mins <= end) return true;
     }
   }
@@ -49,7 +41,7 @@ export default function Home() {
   const [profileId, setProfileId] = useState(null);
   const [toast, setToast] = useState(null);
 
-  // Regulars counter (persisted)
+  // Regulars (persisted)
   const [regularsMap, setRegularsMap] = useState({});
   useEffect(() => {
     try {
@@ -85,6 +77,9 @@ export default function Home() {
       return n;
     });
   const isFav = (id) => favs.has(id);
+
+  // Favorites-only filter
+  const [filterFavsOnly, setFilterFavsOnly] = useState(false);
 
   // Routing
   const parseHash = () => {
@@ -125,20 +120,16 @@ export default function Home() {
     setTimeout(() => setToast(null), 2000);
   };
 
-  // Boot data
+  // Boot data (CACHE-BUSTED)
   useEffect(() => {
     const boot = async () => {
       try {
-        const res = await fetch('/data.json', { cache: 'no-store' });
+        const v = Date.now();
+        const res = await fetch(`/data.json?v=${v}`, { cache: 'no-store' });
         if (!res.ok) throw new Error('bad status');
         setData(await res.json());
       } catch (e) {
-        // Fallback (should not trigger in production)
-        setData({
-          venues: [],
-          pros: [],
-          venueToPro: {}
-        });
+        setData({ venues: [], pros: [], venueToPro: {} });
       }
     };
     boot();
@@ -160,7 +151,6 @@ export default function Home() {
     return () => window.removeEventListener('hashchange', apply);
   }, []);
 
-  // Data helpers
   const pros = data?.pros || [];
   const now = new Date();
   const prosWithStatus = useMemo(
@@ -174,12 +164,14 @@ export default function Home() {
     [pros, favs, data]
   );
 
-  // FEED ORDER: Schedule-based (onTonight first). Within each bucket, keep original order.
+  // Order: OnTonight first → others. Then apply optional favorites filter.
   const feedOrdered = useMemo(() => {
     const onNow = prosWithStatus.filter((p) => p.onTonight);
     const notNow = prosWithStatus.filter((p) => !p.onTonight);
-    return [...onNow, ...notNow];
-  }, [prosWithStatus]);
+    let ordered = [...onNow, ...notNow];
+    if (filterFavsOnly) ordered = ordered.filter((p) => p.favorite);
+    return ordered;
+  }, [prosWithStatus, filterFavsOnly]);
 
   const profile =
     useMemo(() => pros.find((p) => p.id === profileId) || pros[0] || {}, [pros, profileId]) || {};
@@ -240,17 +232,17 @@ export default function Home() {
           <div className="filters">
             <button
               className="chip"
-              onClick={() => showToast('Schedule-based order. Favorites highlighted.')}
-              title="Schedule sorts first; favorites are starred"
+              onClick={() => showToast('Schedule-based order. OnTonight → others.')}
+              title="Schedule sorts first"
             >
               Schedule
             </button>
             <button
-              className="chip"
-              onClick={() => showToast('Star your favorites ★ — they’ll be highlighted')}
-              title="Mark favorites with the star"
+              className={`chip ${filterFavsOnly ? 'active' : ''}`}
+              onClick={() => setFilterFavsOnly((v) => !v)}
+              title="Show only your favorites"
             >
-              ★ Favorites
+              ★ Favorites only
             </button>
           </div>
         </header>
@@ -261,7 +253,6 @@ export default function Home() {
               className="card fade-in"
               key={p.id}
               onClick={(e) => {
-                // Only card background click navigates; stop clicks on buttons inside
                 if ((e.target).closest?.('.card-actions')) return;
                 const params = new URLSearchParams([['profile', p.id]]);
                 goto('profile', params);
@@ -286,7 +277,6 @@ export default function Home() {
                 <h3>{p.name} — {p.role}</h3>
                 <p>{p.venue}</p>
               </div>
-
               <div className="card-actions">
                 <button
                   className={`icon-star ${isFav(p.id) ? 'active' : ''}`}
