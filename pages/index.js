@@ -24,6 +24,7 @@ const isOnTonight = (pro, now = new Date()) => {
         if (mins >= start || mins <= end) return true;
       }
     }
+
     // spillover from yesterday past midnight
     const y = new Date(now);
     y.setDate(now.getDate() - 1);
@@ -81,7 +82,7 @@ export default function Home() {
   // Favorites-only filter
   const [filterFavsOnly, setFilterFavsOnly] = useState(false);
 
-  // Routing
+  // Routing (hash)
   const parseHash = () => {
     const raw = (typeof window !== 'undefined' ? window.location.hash : '#/splash').slice(1);
     let path = raw, query = '';
@@ -135,7 +136,7 @@ export default function Home() {
     boot();
   }, []);
 
-  // Apply hash on nav
+  // Hash apply
   useEffect(() => {
     const apply = () => {
       const { screen, params } = parseHash();
@@ -164,7 +165,7 @@ export default function Home() {
     [pros, favs, data]
   );
 
-  // Order: OnTonight first → others. Then apply optional favorites filter.
+  // Order: OnTonight first → others, then optional favorites filter.
   const feedOrdered = useMemo(() => {
     const onNow = prosWithStatus.filter((p) => p.onTonight);
     const notNow = prosWithStatus.filter((p) => !p.onTonight);
