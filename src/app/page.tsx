@@ -7,6 +7,7 @@ const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function HomePage() {
   const { data, isLoading } = useSWR("/api/events", fetcher);
+  const events = Array.isArray(data) ? data : [];
 
   return (
     <main className="min-h-screen">
@@ -20,9 +21,14 @@ export default function HomePage() {
 
         {isLoading ? (
           <div>Loading...</div>
+        ) : events.length === 0 ? (
+          <div className="text-center text-gray-400">
+            No events yet... try{" "}
+            <Link href="/workers" className="underline">People</Link> to see Ari, Melanie, and Stephan.
+          </div>
         ) : (
           <div className="grid md:grid-cols-3 gap-6">
-            {data?.map((event: any) => <EventCard key={event.id} event={event} />)}
+            {events.map((event: any) => <EventCard key={event.id} event={event} />)}
           </div>
         )}
       </section>
