@@ -1,63 +1,44 @@
+"use client";
+import useSWR from "swr";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { venues, workers } from "@/lib/data";
 
-type Params = { slug: string };
+const fetcher = (url: string) => fetch(url).then(r => r.json());
 
-export default function VenueDetail({ params }: { params: Params }) {
-  const venue = venues.find(v => v.slug === params.slug);
-  if (!venue) return notFound();
+export default function VenuesPage() {
+  const { data, isLoading, error } = useSWR("/api/venues", fetcher);
 
-  const roster = workers.filter(w => venue.workers.includes(w.id));
+  if (error) return <div className="p-6">Failed to load venues</div>;
+  if (isLoading) return <div className="p-6">Loading venues...</div>;
+
+  const venues = Array.isArray(data) ? data : [];
 
   return (
     <main className="container mx-auto p-6">
-      <nav className="text-sm mb-4 text-gray-400">
-        <Link href="/" className="hover:underline">Home</Link>
-        <span className="mx-2">/</span>
-        <Link href="/venues" className="hover:underline">Venues</Link>
-        <span className="mx-2">/</span>
-        <span className="text-gray-300">{venue.name}</span>
-      </nav>
+      <h1 className="text-2xl font-bold mb-4">Explore by Venue</h1>
 
-      <div className="mb-6">
-        <div className="relative w-full max-w-4xl aspect-[16/9] overflow-hidden rounded-2xl bg-gray-800">
-          <img
-            src={venue.image || "/placeholder.jpg"}
-            alt={venue.name}
-            className="w-full h-full object-cover"
-          />
+      {venues.length === 0 ? (
+        <div className="text-gray-400">
+          No venues yet... head to{" "}
+          <Link href="/workers" className="underline">People</Link> to browse Ari, Melanie, and Stephan.
         </div>
-        <h1 className="text-3xl font-bold mt-4">{venue.name}</h1>
-        <p className="text-gray-400">{venue.address}</p>
-        <p className="text-gray-300 mt-2">Who’s on tonight: {venue.tonight}</p>
-      </div>
-
-      <h2 className="text-xl font-semibold mb-3">Tonight’s roster</h2>
-      {roster.length === 0 ? (
-        <p className="text-gray-400">No workers listed for tonight.</p>
       ) : (
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {roster.map(w => (
-            <div key={w.id} className="bg-gray-900 rounded-2xl p-4">
-              <div className="relative w-full aspect-square overflow-hidden rounded-xl bg-gray-800">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {venues.map((v: any) => (
+            <Link
+              key={v.id}
+              href={`/venues/${v.slug}`}
+              className="block bg-gray-900 rounded-2xl p-4 hover:shadow-lg"
+            >
+              <div className="relative w-full aspect-[16/9] overflow-hidden rounded-xl mb-3 bg-gray-800">
                 <img
-                  src={w.avatar || "/placeholder.jpg"}
-                  alt={w.name}
+                  src={v.image || "/placeholder.jpg"}
+                  alt={v.name}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <h3 className="text-lg font-semibold mt-3">{w.name}</h3>
-              <p className="text-gray-400 text-sm">{w.role}</p>
-              <div className="mt-3">
-                <Link
-                  href="/workers"
-                  className="text-xs px-2 py-1 border border-gray-700 rounded hover:bg-gray-800"
-                >
-                  View all people
-                </Link>
-              </div>
-            </div>
+              <h2 className="text-lg font-semibold">{v.name}</h2>
+              <p className="text-sm text-gray-400">{v.address}</p>
+            </Link>
           ))}
         </div>
       )}
